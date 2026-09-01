@@ -84,7 +84,8 @@ ready() {
   done
   [[ -e /sys/class/bluetooth/hci0 ]]
 
-  btmgmt power on >/dev/null
+  hciconfig hci0 up >/dev/null 2>&1 || true
+  btmgmt power on >/dev/null 2>&1 &
   info="$(hciconfig -a hci0)"
   grep -q "UP RUNNING" <<<"$info"
   grep -q "BD Address:" <<<"$info"
