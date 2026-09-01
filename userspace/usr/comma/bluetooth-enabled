@@ -1,0 +1,3 @@
+#!/bin/bash
+
+[[ -r /data/params/d/BluetoothEnabled ]] && [[ "$(</data/params/d/BluetoothEnabled)" == 1 ]]

@@ -16,6 +16,9 @@ dependencies = [
   "tinymesa==25.2.7.2",
 
   "pycapnp==2.1.0",  # 2.2 introduces a memory leak due to cyclic references
+  "crcmod==1.7",  # C3 panda serial protocol
+  "pyserial==3.5",  # C3 panda serial transport
+  "kaitaistruct==0.11",  # C3 firmware parsing
 
   # hardware.py
   "dbus-python",

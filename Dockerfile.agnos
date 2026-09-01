@@ -148,6 +148,8 @@ COPY ./userspace/files/*.timer /lib/systemd/system/
 COPY ./userspace/files/serial-getty@ttyMSM0_override.conf /lib/systemd/system/serial-getty@ttyMSM0.service.d/serial-getty@ttyMSM0_override.conf
 COPY ./userspace/files/ssh_override.conf /lib/systemd/system/ssh.service.d/override.conf
 COPY ./userspace/firmware/* /lib/firmware/
+COPY ./userspace/files/bluetooth-main.conf /etc/bluetooth/main.conf
+COPY ./userspace/files/starpilot-bluetooth.conf /etc/dbus-1/system.d/starpilot-bluetooth.conf
 
 # populate /etc
 COPY ./userspace/files/fstab /etc

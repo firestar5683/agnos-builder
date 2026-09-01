@@ -1,0 +1,10 @@
+[Unit]
+Description=BlueALSA
+Requires=bluetooth.service
+After=bluetooth.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bluealsa -p a2dp-source
+Restart=on-failure
+RestartSec=1

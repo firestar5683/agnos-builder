@@ -55,6 +55,8 @@ apt-fast install --no-install-recommends -yq \
     alsa-utils \
     apport-retrace \
     bc \
+    bluez \
+    bluez-alsa-utils \
     build-essential \
     bzip2 \
     curl \
@@ -73,6 +75,7 @@ apt-fast install --no-install-recommends -yq \
     jq \
     landscape-common \
     libi2c-dev \
+    libasound2-plugin-bluez \
     libqmi-utils \
     libtool \
     libncursesw5-dev \
@@ -89,6 +92,7 @@ apt-fast install --no-install-recommends -yq \
     network-manager \
     openssl \
     ppp \
+    rfkill \
     smartmontools \
     speedtest-cli \
     squashfs-tools \
