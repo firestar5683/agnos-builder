@@ -162,8 +162,6 @@ COPY ./userspace/files/rsyslog /etc/logrotate.d/
 RUN chmod 644 /etc/logrotate.conf
 RUN touch -r /lib/systemd/systemd /etc/fstab
 
-RUN mkdir -p /lib/firmware/qca
-
 # populate /usr
 COPY ./userspace/usr/comma/ /usr/$USERNAME/
 COPY ./userspace/usr/share/fonts/* /usr/share/fonts/
