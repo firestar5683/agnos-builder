@@ -75,7 +75,6 @@ prepare() {
   sleep 3
   pulse
   rfkill unblock bluetooth
-  systemctl start bluetooth.service
 }
 
 ready() {
@@ -86,11 +85,13 @@ ready() {
   [[ -e /sys/class/bluetooth/hci0 ]]
 
   hciconfig hci0 up >/dev/null 2>&1 || true
+  btmgmt --index 0 power on >/dev/null 2>&1 &
   info="$(hciconfig -a hci0)"
   grep -q "UP RUNNING" <<<"$info"
   grep -q "BD Address:" <<<"$info"
   ! grep -q "BD Address: 00:00:00:00:00:00" <<<"$info"
 
+  systemctl start bluetooth.service
   systemctl start bluealsa.service
 }
 
