@@ -5,6 +5,12 @@ on:
     branches: [ master ]
   pull_request:
   workflow_dispatch:
+    inputs:
+      upload:
+        description: Upload the built AGNOS artifacts
+        required: false
+        default: true
+        type: boolean
 
 concurrency:
   group: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.run_id || github.head_ref || github.ref }}-${{ github.workflow }}-${{ github.event_name }}
@@ -76,21 +82,21 @@ jobs:
         } | tee -a $GITHUB_OUTPUT
 
     - name: Package and OTA push
-      if: "contains(env.LAST_COMMIT_MESSAGE, '[upload]')"
+      if: "contains(env.LAST_COMMIT_MESSAGE, '[upload]') || (github.event_name == 'workflow_dispatch' && inputs.upload)"
       env:
-        AGNOS_UPDATE_URL: https://gitlab.com/commaai/ci-artifacts/-/raw/agnos-builder/pr-${{ github.event.number }}
+        AGNOS_UPDATE_URL: https://gitlab.com/commaai/ci-artifacts/-/raw/agnos-builder/manual-${{ github.run_id }}
       run: |
         scripts/package_ota.py
 
     - name: Save PR number, VERSION and stats
-      if: "contains(env.LAST_COMMIT_MESSAGE, '[upload]')"
+      if: "contains(env.LAST_COMMIT_MESSAGE, '[upload]') || (github.event_name == 'workflow_dispatch' && inputs.upload)"
       run: |
-        echo ${{ github.event.number }} > output/ota/PR
+        echo ${{ github.event.number || github.run_id }} > output/ota/PR
         cp VERSION output/ota
         echo "${{ steps.stats.outputs.stats_summary }}" > output/ota/agnos_stats.txt
 
     - name: Upload artifacts
-      if: "contains(env.LAST_COMMIT_MESSAGE, '[upload]')"
+      if: "contains(env.LAST_COMMIT_MESSAGE, '[upload]') || (github.event_name == 'workflow_dispatch' && inputs.upload)"
       uses: actions/upload-artifact@v4
       with:
         name: agnos-artifacts

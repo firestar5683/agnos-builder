@@ -172,7 +172,11 @@ def process_file(entry):
 if __name__ == "__main__":
   OTA_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-  files = [(process_file(x), x.ota) for x in GPTS + PARTITIONS]
+  entries = GPTS + [x for x in PARTITIONS if x.path.exists()]
+  missing = [x.name for x in PARTITIONS if not x.path.exists()]
+  if missing:
+    print(f"Skipping optional missing partitions: {', '.join(missing)}")
+  files = [(process_file(x), x.ota) for x in entries]
 
   configs = [
     # URL, file name, only OTA partitions

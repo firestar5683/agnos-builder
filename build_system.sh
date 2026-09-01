@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -eo pipefail
 
 UBUNTU_BASE_URL="https://cdimage.ubuntu.com/ubuntu-base/releases/24.04/release/"
 UBUNTU_FILE="ubuntu-base-24.04.3-base-arm64.tar.gz"
@@ -8,6 +8,8 @@ UBUNTU_FILE_CHECKSUM="7b2dced6dd56ad5e4a813fa25c8de307b655fdabc6ea9213175a92c48d
 # Make sure we're in the correct spot
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 cd $DIR
+
+./scripts/validate_starpilot_inputs.sh
 
 BUILD_DIR="$DIR/build"
 OUTPUT_DIR="$DIR/output"
@@ -48,16 +50,6 @@ fi
 export DOCKER_BUILDKIT=1
 docker buildx build -f Dockerfile.agnos --check $DIR
 
-# Start build and create container
-echo "Building agnos-builder docker image"
-BUILD="docker buildx build --load"
-if [ ! -z "$NS" ]; then
-  BUILD="nsc build --load"
-fi
-$BUILD -f Dockerfile.agnos -t agnos-builder $DIR --build-arg UBUNTU_BASE_IMAGE=$UBUNTU_FILE --platform=linux/arm64
-echo "Creating agnos-builder container"
-CONTAINER_ID=$(docker container create --entrypoint /bin/bash agnos-builder:latest)
-
 # Check agnos-meta-builder Dockerfile
 docker buildx build --load -f Dockerfile.builder --check $DIR \
   --build-arg UNAME=$(id -nu) \
@@ -75,7 +67,7 @@ MOUNT_CONTAINER_ID=$(docker run -d --privileged -v $DIR:$DIR agnos-meta-builder)
 
 # Cleanup containers on possible exit
 trap "echo \"Cleaning up containers:\"; \
-docker container rm -f $CONTAINER_ID $MOUNT_CONTAINER_ID" EXIT
+docker container rm -f $MOUNT_CONTAINER_ID" EXIT
 
 # Define functions for docker execution
 exec_as_user() {
@@ -99,12 +91,19 @@ exec_as_root mount $ROOTFS_IMAGE $ROOTFS_DIR
 # Also unmount filesystem (overwrite previous trap)
 trap "exec_as_root umount -l $ROOTFS_DIR &> /dev/null || true; \
 echo \"Cleaning up containers:\"; \
-docker container rm -f $CONTAINER_ID $MOUNT_CONTAINER_ID" EXIT
+docker container rm -f $MOUNT_CONTAINER_ID" EXIT
 
-# Extract image
-echo "Extracting docker image"
-docker container export -o $BUILD_DIR/filesystem.tar $CONTAINER_ID
-exec_as_root tar -xf $BUILD_DIR/filesystem.tar -C $ROOTFS_DIR > /dev/null
+echo "Building and extracting agnos-builder docker image"
+BUILD="docker buildx build"
+if [ ! -z "$NS" ]; then
+  BUILD="nsc build"
+fi
+$BUILD -f Dockerfile.agnos \
+  --output "type=tar,dest=-" \
+  --provenance=false \
+  --build-arg UBUNTU_BASE_IMAGE=$UBUNTU_FILE \
+  --platform=linux/arm64 \
+  "$DIR" | docker exec -i $MOUNT_CONTAINER_ID tar -xf - -C $ROOTFS_DIR
 
 # Avoid detecting as container
 echo "Removing .dockerenv file"

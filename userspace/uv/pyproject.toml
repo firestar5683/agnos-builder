@@ -20,6 +20,25 @@ dependencies = [
   "pyserial==3.5",  # C3 panda serial transport
   "kaitaistruct==0.11",  # C3 firmware parsing
 
+  # StarPilot runtime (kept explicit so a clean AGNOS build contains the
+  # same managed-venv surface as the validated 19.6.13 image)
+  "aiohappyeyeballs==2.7.1",
+  "aiohttp==3.12.15",
+  "aiosignal==1.4.0",
+  "attrs==26.1.0",
+  "frozenlist==1.8.0",
+  "json-rpc==1.15.0",
+  "mapbox-earcut==1.0.3",
+  "multidict==6.7.1",
+  "onnx==1.18.0",
+  "opencv-python-headless==4.11.0.86",
+  "propcache==0.5.2",
+  "protobuf==7.35.1",
+  "pyaudio==0.2.14",
+  "typing-extensions==4.16.0",
+  "xattr==1.2.0",
+  "yarl==1.24.5",
+
   # hardware.py
   "dbus-python",
   # amplifier.py
