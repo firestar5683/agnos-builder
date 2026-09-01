@@ -90,7 +90,7 @@ ready() {
     sleep 0.1
   done
   for _ in $(seq 1 20); do
-    btmgmt --index 0 power on >/dev/null 2>&1 && break
+    bluetoothctl power on >/dev/null 2>&1 && break
     sleep 0.25
   done
   info="$(hciconfig -a hci0)"
