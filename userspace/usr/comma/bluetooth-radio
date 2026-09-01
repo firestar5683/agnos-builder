@@ -84,14 +84,20 @@ ready() {
   done
   [[ -e /sys/class/bluetooth/hci0 ]]
 
-  hciconfig hci0 up >/dev/null 2>&1 || true
-  btmgmt --index 0 power on >/dev/null 2>&1 &
+  systemctl start bluetooth.service
+  for _ in $(seq 1 100); do
+    busctl --system status org.bluez >/dev/null 2>&1 && break
+    sleep 0.1
+  done
+  for _ in $(seq 1 20); do
+    btmgmt --index 0 power on >/dev/null 2>&1 && break
+    sleep 0.25
+  done
   info="$(hciconfig -a hci0)"
   grep -q "UP RUNNING" <<<"$info"
   grep -q "BD Address:" <<<"$info"
   ! grep -q "BD Address: 00:00:00:00:00:00" <<<"$info"
 
-  systemctl start bluetooth.service
   systemctl start bluealsa.service
 }
 
