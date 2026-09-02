@@ -9,6 +9,7 @@ ExecCondition=/usr/comma/bluetooth-enabled
 ExecStartPre=/usr/comma/bluetooth-radio prepare
 ExecStart=/usr/bin/btattach -B /dev/ttyHS1 -P qca -S 115200
 ExecStartPost=/usr/comma/bluetooth-radio ready
+ExecStop=/usr/comma/bluetooth-radio stop
 ExecStopPost=/usr/comma/bluetooth-radio cleanup
 Restart=on-failure
 RestartSec=2

@@ -101,8 +101,11 @@ ready() {
   systemctl start bluealsa.service
 }
 
-cleanup() {
+stop() {
   systemctl stop bluealsa.service bluetooth.service || true
+}
+
+cleanup() {
   rfkill block bluetooth || true
   power 0 || true
   mountpoint -q "$BLUETOOTH_BIND" && umount "$BLUETOOTH_BIND" || true
@@ -113,6 +116,7 @@ cleanup() {
 case "${1:-}" in
   prepare) prepare ;;
   ready) ready ;;
+  stop) stop ;;
   cleanup) cleanup ;;
   *) exit 2 ;;
 esac
