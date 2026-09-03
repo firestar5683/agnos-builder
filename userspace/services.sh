@@ -30,6 +30,7 @@ systemctl enable avahi-ssh-publish.service
 systemctl enable screen_calibration.service
 systemctl enable starpilot-bluetooth-radio.service
 systemctl disable bluetooth.service
+systemctl disable bluealsa-aplay.service
 
 # Disable some of our services
 systemctl disable agnos-tests.service
