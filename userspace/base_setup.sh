@@ -18,7 +18,7 @@ bash -c "$(curl -sL https://git.io/vokNn)"
 
 # Install packages
 export DEBIAN_FRONTEND=noninteractive
-apt-fast install --no-install-recommends -yq locales systemd adduser
+apt-get install --no-install-recommends -yq locales systemd adduser
 
 # Create privileged user
 useradd -G sudo -m -s /bin/bash $USERNAME
@@ -50,8 +50,8 @@ echo "comma - nice -10" >> /etc/security/limits.conf
 locale-gen en_US.UTF-8
 update-locale LANG=en_US.UTF-8
 
-apt-fast upgrade -yq
-apt-fast install --no-install-recommends -yq \
+apt-get upgrade -yq
+apt-get install --no-install-recommends -yq \
     alsa-utils \
     apport-retrace \
     bc \
@@ -129,8 +129,8 @@ echo "comma ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 ln -sf /bin/bash /bin/sh
 
 # Install necessary libs
-apt-fast update -yq
-apt-fast install --no-install-recommends -yq \
+apt-get update -yq
+apt-get install --no-install-recommends -yq \
     libacl1:armhf \
     libasan6-armhf-cross \
     libatomic1-armhf-cross \
