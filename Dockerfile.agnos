@@ -78,6 +78,13 @@ RUN apt-get -o Dpkg::Options::="--force-overwrite" install -yq \
     /tmp/agnos/libssl1.1_1.1.1f-1ubuntu2.22_arm64.deb \
     /tmp/agnos/libffi6_3.2.1-8_arm64.deb
 
+# Build the pinned WebRTC backend with the Connect ICE fix. Keep its build
+# environment out of the final image; only the validated wheel is copied below.
+FROM agnos-base AS agnos-compiler-webrtc
+RUN apt-get update && apt-get install -yq --no-install-recommends python3-dev
+COPY ./userspace/webrtc /tmp/agnos/webrtc
+RUN bash /tmp/agnos/webrtc/build_libdatachannel.sh /tmp/webrtc-wheels /usr/local/venv/bin/python
+
 # ################### #
 # ###### AGNOS ###### #
 # ################### #
@@ -125,6 +132,14 @@ RUN source $XDG_DATA_HOME/venv/bin/activate && \
       --no-install-package rednose \
       --no-install-package teleoprtc \
       --no-install-package tinygrad
+
+# Install after the frozen sync so the registry wheel cannot replace the fix.
+# Leave every other locked dependency unchanged. Test the actual runtime too.
+COPY --from=agnos-compiler-webrtc /tmp/webrtc-wheels /tmp/agnos/webrtc-wheels
+COPY ./userspace/webrtc/check_ice.py /usr/comma/tests/webrtc_ice_check.py
+RUN uv pip install --python $XDG_DATA_HOME/venv/bin/python --no-index --no-deps \
+      --find-links /tmp/agnos/webrtc-wheels 'libdatachannel-py==2026.1.0.dev2+starpilot.ice1' && \
+    $XDG_DATA_HOME/venv/bin/python /usr/comma/tests/webrtc_ice_check.py
 
 # Install nice to haves
 COPY ./userspace/install_extras.sh /tmp/agnos/
