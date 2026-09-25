@@ -31,7 +31,7 @@ Bluetooth files, and WebRTC patches are the StarPilot release inputs. `build_sys
 those inputs before starting Docker, so a build cannot silently fall back to the
 stock installer or omit the C3 runtime dependencies.
 
-AGNOS 19.6.20 also builds and installs the [Connect ICE fix](userspace/webrtc/README.md)
+AGNOS 19.8.1 also builds and installs the [Connect ICE fix](userspace/webrtc/README.md)
 into the managed Python environment, after the frozen dependency sync. Both the
 built wheel and installed runtime must pass loopback ICE regression checks.
 The remaining locked packages and existing C3/Bluetooth fixes are unchanged.
